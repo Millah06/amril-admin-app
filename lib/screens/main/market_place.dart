@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+
+class MarketPlace extends StatefulWidget {
+  const MarketPlace({super.key});
+
+  @override
+  State<MarketPlace> createState() => _MarketPlaceState();
+}
+
+class _MarketPlaceState extends State<MarketPlace> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF0F172A), Color(0xFF0D9488), Color(0xFF0F172A), Color(0xFF0D9488) ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      padding: EdgeInsets.only(top: 50, left: 15, right: 15),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+            child: SingleChildScrollView(
+              child: Text('Hello world'),
+            )
+        ),
+      ),
+    );
+  }
+}
