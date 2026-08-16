@@ -9,7 +9,6 @@ import '../../../shared/widgets/loading_list.dart';
 import '../models/appeal_model.dart';
 import '../providers/appeal_provider.dart';
 import '../screens/appeal_detail_screen.dart';
-import '../screens/vendor_detail_screen.dart';
 
 class AppealTab extends StatefulWidget {
   const AppealTab({super.key});

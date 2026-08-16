@@ -26,12 +26,19 @@ class MarketDashboardService {
   Future<MarketDashboardStats> getStats() async {
     // Fire both requests simultaneously
     final results = await Future.wait([
-      DioClient.get(ApiConstants.marketPlaceGetVendors, queryParameters: {'status' : "pending"}),   // list of pending vendors
+      DioClient.get(ApiConstants.marketPlaceGetVendors,
+          queryParameters: {'status': 'pending', 'limit': 50}), // pending vendors (first page)
       DioClient.get(ApiConstants.marketPlaceGetAppeals),           // list of active appeals
       DioClient.get(ApiConstants.adminStats),              // global admin stats
     ]);
 
-    final pendingVendors = (results[0] as List).length;
+    // /admin/vendors returns a `{data, meta}` envelope (§4.2). No total count in
+    // meta, so this tile counts the first page (capped at 50) — plenty for a
+    // "needs attention" dashboard number.
+    final vendorsRes = results[0];
+    final pendingVendors = vendorsRes is Map
+        ? ((vendorsRes['data'] as List?)?.length ?? 0)
+        : (vendorsRes as List).length;
     final activeAppeals = (results[1] as List).length;
 
     final adminStats = results[2] as Map<String, dynamic>;

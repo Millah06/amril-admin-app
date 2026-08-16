@@ -1,6 +1,7 @@
+import 'package:admin_panel/features/reconciliation/screen.dart';
 import 'package:admin_panel/features/transaction/screen.dart';
 import 'package:admin_panel/features/users/users_screen.dart';
-import 'package:admin_panel/screens/main/market_place.dart';
+import 'package:admin_panel/screens/notification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/theme/app_theme.dart';
 
-
 import 'analytics/screen.dart';
+import 'broadcast/provider.dart';
+import 'broadcast/screen.dart';
+import 'broadcast/service.dart';
 import 'dashboard/screen.dart';
-import 'marketPlace/shell.dart';
 
 /// The root scaffold with 4-tab bottom navigation.
 /// Each tab preserves its own navigation stack via [IndexedStack].
@@ -29,16 +31,22 @@ class _ShellScreenState extends State<ShellScreen> {
     _TabItem(icon: Icons.dashboard_rounded, label: 'Dashboard'),
     _TabItem(icon: Icons.people_alt_rounded, label: 'Users'),
     _TabItem(icon: Icons.receipt_long_rounded, label: 'Transactions'),
-    _TabItem(icon: Icons.storefront_rounded, label: 'Market'),
     _TabItem(icon: Icons.bar_chart_rounded, label: 'Analytics'),
+    _TabItem(icon: Icons.account_balance_rounded, label: 'Treasury'),
+    _TabItem(icon: Icons.campaign_rounded, label: 'Broadcast'),
   ];
 
-  static const _screens = [
-    DashboardScreen(),
-    UsersScreen(),
-    TransactionsScreen(),
-    MarketPlaceShell(),
-    AnalyticsScreen(),
+  static final _screens = [
+    const DashboardScreen(),
+    const UsersScreen(),
+    const TransactionsScreen(),
+    const AnalyticsScreen(),
+    const TreasuryScreen(),
+    const NotificationScreen(),
+    // ChangeNotifierProvider(
+    //   create: (_) => BroadcastProvider(BroadcastService()),
+    //   child: const BroadcastScreen(),
+    // ),
   ];
 
   /// Double-tap on current tab to scroll to top (handled inside each screen),
@@ -60,7 +68,9 @@ class _ShellScreenState extends State<ShellScreen> {
           border: Border(top: BorderSide(color: AppTheme.divider, width: 1)),
         ),
         child: BottomNavigationBar(
-
+          type: BottomNavigationBarType.fixed,           // ← add: show all 6 labels
+          selectedItemColor: AppTheme.primary,           // ← optional, on-brand
+          unselectedItemColor: AppTheme.textSecondary,   // ← optional
           // backgroundColor:  Color(0xFF334155),
           currentIndex: _currentIndex,
           onTap: _onTabTapped,

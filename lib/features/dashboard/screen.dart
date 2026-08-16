@@ -1,5 +1,7 @@
 import 'package:admin_panel/features/dashboard/provider.dart';
 import 'package:admin_panel/features/dashboard/stat_card.dart';
+import 'package:admin_panel/features/marketPlace/shell.dart';
+import 'package:admin_panel/features/partner/partner_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -58,6 +60,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                // ── Marketplace ─────────────────────────────────────────────
+                _SectionHeader(title: 'Marketplace', icon: Icons.storefront_outlined),
+                const SizedBox(height: 12),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.storefront_rounded, color: AppTheme.primary),
+                    title: const Text(
+                      'Manage Marketplace',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                    subtitle: const Text('Vendors, Hardware, Appeals & Configs'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const MarketPlaceShell()),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+
                 // ── Users ─────────────────────────────────────────────────
                 _SectionHeader(title: 'Users', icon: Icons.people_alt_outlined),
                 const SizedBox(height: 12),
@@ -80,23 +103,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       value: AppFormatters.compact(s.users.active),
                       icon: Icons.check_circle_outline,
                       iconColor: AppTheme.success,
-                      iconBg: AppTheme.success.withOpacity(0.1),
+                      iconBg: AppTheme.success.withValues(alpha: 0.1),
                     ),
                     StatCard(
                       label: 'Blocked Users',
                       value: s.users.blocked.toString(),
                       icon: Icons.block_rounded,
                       iconColor: AppTheme.danger,
-                      iconBg: AppTheme.danger.withOpacity(0.1),
+                      iconBg: AppTheme.danger.withValues(alpha: 0.1),
                     ),
                     StatCard(
                       label: 'KYC Pending',
                       value: s.kyc.pending.toString(),
                       icon: Icons.hourglass_empty_rounded,
                       iconColor: AppTheme.warning,
-                      iconBg: AppTheme.warning.withOpacity(0.1),
+                      iconBg: AppTheme.warning.withValues(alpha: 0.1),
                     ),
                   ],
+                ),
+                const SizedBox(height: 24),
+
+                // ── Partners ──────────────────────────────────────────────
+                _SectionHeader(title: 'Partners', icon: Icons.handshake_outlined),
+                const SizedBox(height: 12),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.handshake_rounded, color: AppTheme.primary),
+                    title: const Text(
+                      'Manage Partners',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                    subtitle: const Text('Partner codes, vendor assignments & commission payouts'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const PartnerListScreen()),
+                      );
+                    },
+                  ),
                 ),
                 const SizedBox(height: 24),
 

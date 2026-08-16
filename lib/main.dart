@@ -1,15 +1,12 @@
 import 'package:admin_panel/core/theme/app_theme.dart';
 import 'package:admin_panel/features/sheel_screen.dart';
-import 'package:admin_panel/screens/main/home.dart';
 import 'package:admin_panel/screens/login.dart';
 import 'package:admin_panel/services/brain.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'components/bootom_bar.dart';
 import 'constraints/constants.dart';
 import 'features/analytics/provider.dart';
 import 'features/analytics/service.dart';
@@ -19,6 +16,8 @@ import 'features/transaction/provider.dart';
 import 'features/transaction/service.dart';
 import 'features/users/provider.dart';
 import 'features/users/service.dart';
+import 'features/partner/provider.dart';
+import 'features/partner/service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,6 +81,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => UsersProvider(UsersService())),
         ChangeNotifierProvider(create: (_) => TransactionsProvider(TransactionsService())),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider(AnalyticsService())),
+        ChangeNotifierProvider(create: (_) => PartnerProvider(PartnerService())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

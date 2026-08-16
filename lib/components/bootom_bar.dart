@@ -76,7 +76,7 @@ class _BottomBarState extends State<BottomBar> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(FontAwesomeIcons.house,
+                  FaIcon(FontAwesomeIcons.house,
                     size: selectedIndex == 0 ? 15 : 20,
                     color: selectedIndex == 0 ? Color(0xFF21D3ED) :
                     Colors.white38,),
@@ -95,7 +95,7 @@ class _BottomBarState extends State<BottomBar> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(FontAwesomeIcons.users,
+                  FaIcon(FontAwesomeIcons.users,
                     size: selectedIndex == 1 ? 15 : 20, color: selectedIndex == 1 ? Color(0xFF21D3ED) :
                     Colors.white38,),
                   Visibility(
@@ -113,7 +113,7 @@ class _BottomBarState extends State<BottomBar> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(FontAwesomeIcons.database,
+                  FaIcon(FontAwesomeIcons.database,
                     size: selectedIndex == 2 ? 15 : 20, color: selectedIndex == 2 ? Color(0xFF21D3ED) :
                       Colors.white38),
                   Visibility(

@@ -4,45 +4,59 @@ import '../../../core/erorrs/app_exception.dart';
 import '../models/vendor_model.dart';
 import '../service/vendor_service.dart';
 
+/// Cursor-paginated vendors list (§4.3 — mirrors the HardwareProvider orders
+/// pattern). Filters are always passed server-side; changing one reloads from
+/// the first page.
 class VendorProvider extends ChangeNotifier {
   VendorProvider(this._service);
 
   final VendorService _service;
 
-  List<VendorModel> _allVendors = [];
-  List<VendorModel> _vendors = [];
-  Map<String, List<VendorModel>> vendorFiltered = {};
+  List<VendorLite> _vendors = [];
   bool _loading = false;
   String? _error;
 
-  List<VendorModel> get vendors => _vendors;
-  bool get loading => _loading;
-  String? get error => _error;
-  int get count => _vendors.length;
+  String? _cursor;
+  bool hasMore = false;
+  bool loadingMore = false;
 
   String? _verificationStatus;
   String? _status;
   String? _type;
+  String? _search;
 
-  bool noFilter () {
-    if (_allVendors.isEmpty || _vendors.isEmpty) return true;
-    return _allVendors.length == _vendors.length;
-  }
+  List<VendorLite> get vendors => _vendors;
+  bool get loading => _loading;
+  String? get error => _error;
+  int get count => _vendors.length;
 
+  // Current server-side filters — the tab chips and the filter sheet both
+  // read these so their selections stay in sync (one source of truth).
+  String? get statusFilter => _status;
+  String? get verificationStatusFilter => _verificationStatus;
+  String? get typeFilter => _type;
 
+  bool noFilter() =>
+      _verificationStatus == null && _status == null && _type == null;
 
-  void applyFilter(String? verificationStatus, String? status, String? type) async {
-
+  Future<void> applyFilter(
+      String? verificationStatus, String? status, String? type) async {
     _verificationStatus = verificationStatus;
     _status = status;
     _type = type;
-
-    await getVendors(verificationStatus, status, type, null);
-
+    await load();
   }
 
-  void search(String searchQuery) async {
-    await getVendors(_verificationStatus, _status, _type, searchQuery, refresh: true);
+  /// Quick-chip filter: change only the status, keep the sheet's
+  /// verification/type filters intact.
+  Future<void> setStatusFilter(String? status) async {
+    _status = status;
+    await load();
+  }
+
+  Future<void> search(String searchQuery) async {
+    _search = searchQuery.trim().isEmpty ? null : searchQuery.trim();
+    await load(silent: true);
   }
 
   Future<void> load({bool silent = false}) async {
@@ -51,75 +65,82 @@ class VendorProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
     }
-
-    await getVendors(null, null, null, null);
-  }
-
-  Future<void> getVendors(String? verificationStatus, String? status, String? type, String? searchQuery,
-      {bool refresh = false}) async {
-
     try {
-
-      if (_allVendors.isNotEmpty && !refresh) {
-        _vendors = _allVendors.where((v) {
-          final matchStatus = status == null || v.status == status;
-          final matchVerification =
-              verificationStatus == null ||
-                  v.verificationStatus == verificationStatus;
-          final matchType = type == null || v.vendorType == type;
-
-          return matchStatus && matchVerification && matchType;
-        }).toList();
-
-        _loading = false;
-        notifyListeners();
-        return;
-      }
-
-
-      _allVendors = await _service.getVendors(verificationStatus, status, type, searchQuery);
-      _vendors = _allVendors.where((v) {
-        final matchStatus = status == null || v.status == status;
-        final matchVerification =
-            verificationStatus == null ||
-                v.verificationStatus == verificationStatus;
-        final matchType = type == null || v.vendorType == type;
-
-        return matchStatus && matchVerification && matchType;
-      }).toList();
-      _loading = false;
-      notifyListeners();
-
+      final page = await _service.getVendors(
+        verificationStatus: _verificationStatus,
+        status: _status,
+        vendorType: _type,
+        search: _search,
+      );
+      _vendors = page.items;
+      _cursor = page.nextCursor;
+      hasMore = page.hasMore;
+      _error = null;
     } on AppException catch (e) {
       _error = e.message;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
     } finally {
       _loading = false;
       notifyListeners();
     }
   }
 
-  /// Approve a vendor. Removes it from the pending list on success.
-  /// Returns an error message string, or null on success.
-  Future<String?> approve(String vendorId) async {
+  Future<void> loadMore() async {
+    if (loadingMore || !hasMore || _cursor == null) return;
+    loadingMore = true;
+    notifyListeners();
     try {
-      await _service.approveVendor(vendorId);
-      _vendors.removeWhere((v) => v.id == vendorId);
-      notifyListeners();
-      return null;
+      final page = await _service.getVendors(
+        verificationStatus: _verificationStatus,
+        status: _status,
+        vendorType: _type,
+        search: _search,
+        cursor: _cursor,
+      );
+      _vendors = [..._vendors, ...page.items];
+      _cursor = page.nextCursor;
+      hasMore = page.hasMore;
     } on AppException catch (e) {
-      return e.message;
+      _error = e.message;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+    } finally {
+      loadingMore = false;
+      notifyListeners();
     }
   }
 
-  /// Reject a vendor with a reason. Removes it from the pending list on success.
-  Future<String?> reject(String vendorId, {required String reason}) async {
+  /// Full record for the detail screen (branches + trustProfile + counts).
+  Future<VendorModel> getDetail(String vendorId) =>
+      _service.getVendorDetail(vendorId);
+
+  /// Approve a vendor. Reloads the current page on success.
+  /// Returns an error message string, or null on success.
+  Future<String?> approve(String vendorId) =>
+      _mutate(() => _service.approveVendor(vendorId));
+
+  /// Reject a vendor with a reason.
+  Future<String?> reject(String vendorId, {required String reason}) =>
+      _mutate(() => _service.rejectVendor(vendorId, reason));
+
+  /// Suspend an approved vendor with a reason (§4.2).
+  Future<String?> suspend(String vendorId, {required String reason}) =>
+      _mutate(() => _service.suspendVendor(vendorId, reason));
+
+  /// Reinstate a suspended vendor back to approved.
+  Future<String?> reinstate(String vendorId) =>
+      _mutate(() => _service.reinstateVendor(vendorId));
+
+  Future<String?> _mutate(Future<void> Function() op) async {
     try {
-      await _service.rejectVendor(vendorId, reason);
-      _vendors.removeWhere((v) => v.id == vendorId);
-      notifyListeners();
+      await op();
+      await load(silent: true);
       return null;
     } on AppException catch (e) {
       return e.message;
+    } catch (e) {
+      return e.toString().replaceAll('Exception: ', '');
     }
   }
 }

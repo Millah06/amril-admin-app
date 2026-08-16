@@ -30,6 +30,10 @@ class ConfigProvider extends ChangeNotifier {
       _config = await _service.getConfig();
     } on AppException catch (e) {
       _error = e.message;
+    } catch (e) {
+      // Catch-all so a parse/type error (e.g. a schema change) surfaces to the
+      // UI instead of being swallowed and leaving a silent "No config loaded".
+      _error = 'Failed to load config: $e';
     } finally {
       _loading = false;
       notifyListeners();

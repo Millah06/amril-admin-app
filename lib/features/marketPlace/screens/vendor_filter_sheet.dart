@@ -17,6 +17,16 @@ class _VendorFilterSheetState extends State<VendorFilterSheet> {
   String? status;
   String? vendorType;
 
+  @override
+  void initState() {
+    super.initState();
+    // Seed from the provider so the sheet reflects what's ACTIVE, not blank.
+    final v = context.read<VendorProvider>();
+    verificationStatus = v.verificationStatusFilter;
+    status = v.statusFilter;
+    vendorType = v.typeFilter;
+  }
+
 
   void _apply() {
     final v = context.read<VendorProvider>();
@@ -26,12 +36,7 @@ class _VendorFilterSheetState extends State<VendorFilterSheet> {
 
   void _reset() {
     final v = context.read<VendorProvider>();
-    v.getVendors(
-        null,
-        null,
-        null,
-      null,
-    );
+    v.applyFilter(null, null, null);
     Navigator.pop(context);
   }
 
@@ -45,7 +50,7 @@ class _VendorFilterSheetState extends State<VendorFilterSheet> {
         children: [
           Row(
             children: [
-              const Text('Filter Transactions',
+              const Text('Filter Vendors',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
               const Spacer(),
               IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
@@ -56,7 +61,7 @@ class _VendorFilterSheetState extends State<VendorFilterSheet> {
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
-            children: ['pending' , 'approved', 'rejected'].map((t) {
+            children: ['pending' , 'approved', 'rejected', 'suspended'].map((t) {
               final sel = status == t;
               return ChoiceChip(
                 label: Text(t),
@@ -94,7 +99,7 @@ class _VendorFilterSheetState extends State<VendorFilterSheet> {
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
-            children: ['restaurant', ' grocery', 'drinks', 'retail'].map((t) {
+            children: ['restaurant', 'grocery', 'drinks', 'retail'].map((t) {
               final sel = vendorType == t;
               return ChoiceChip(
                 label: Text(t),

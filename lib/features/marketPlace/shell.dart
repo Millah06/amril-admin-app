@@ -1,6 +1,7 @@
 import 'package:admin_panel/features/marketPlace/service/appeal_service.dart';
 import 'package:admin_panel/features/marketPlace/service/config_service.dart';
 import 'package:admin_panel/features/marketPlace/service/dashboard_services.dart';
+import 'package:admin_panel/features/marketPlace/service/hardware_service.dart';
 import 'package:admin_panel/features/marketPlace/service/vendor_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,10 +10,12 @@ import '../../core/theme/app_theme.dart';
 import './providers/appeal_provider.dart';
 import './providers/config_provider.dart';
 import './providers/dashboard_provider.dart';
+import './providers/hardware_provider.dart';
 import './providers/vendor_provider.dart';
 import './tabs/appeal_tab.dart';
 import './tabs/config_tab.dart';
 import './tabs/dashboard_tab.dart';
+import './tabs/hardware_tab.dart';
 import './tabs/vendors_tab.dart';
 
 /// Root scaffold for the MarketPlace section.
@@ -40,6 +43,7 @@ class _MarketPlaceShellState extends State<MarketPlaceShell> {
     _TabItem(icon: Icons.storefront_rounded, label: 'Overview'),
     _TabItem(icon: Icons.store_rounded, label: 'Vendors'),
     _TabItem(icon: Icons.gavel_rounded, label: 'Appeals'),
+    _TabItem(icon: Icons.point_of_sale_rounded, label: 'Hardware'),
     _TabItem(icon: Icons.tune_rounded, label: 'Config'),
   ];
 
@@ -61,6 +65,9 @@ class _MarketPlaceShellState extends State<MarketPlaceShell> {
         ChangeNotifierProvider(
           create: (_) => ConfigProvider(ConfigService()),
         ),
+        ChangeNotifierProvider(
+          create: (_) => HardwareProvider(HardwareService()),
+        ),
       ],
       child: Builder(
         builder: (ctx) => Scaffold(
@@ -70,6 +77,7 @@ class _MarketPlaceShellState extends State<MarketPlaceShell> {
               DashboardTab(),
               VendorsTab(),
               AppealTab(),
+              HardwareTab(),
               ConfigTab(),
             ],
           ),

@@ -36,8 +36,11 @@ class ApiConstants {
 
   // ── MarketPlace: Vendors ──────────────────────────────────────────────────────
   static const String marketPlaceGetVendors = '/admin/vendors';
+  static String marketPlaceVendorDetail(String vendorId) => '/admin/vendor/$vendorId';
   static String marketPlaceApproveVendor(String vendorId) => '/admin/vendor/$vendorId/approve';
   static String marketPlaceRejectVendor(String vendorId) => '/admin/vendor/$vendorId/reject';
+  static String marketPlaceSuspendVendor(String vendorId) => '/admin/vendor/$vendorId/suspend';
+  static String marketPlaceReinstateVendor(String vendorId) => '/admin/vendor/$vendorId/reinstate';
 
 
   // ── MarketPlace: Appeal ──────────────────────────────────────────────────────
@@ -48,4 +51,43 @@ class ApiConstants {
   // ── MarketPlace: Config ──────────────────────────────────────────────────────
   static const String marketPlaceGetConfig = '/admin/config';
   static const String marketPlaceUpdateConfig = '/admin/config';
+
+  // ── MarketPlace: Hardware (Workstream A4) ────────────────────────────────────
+  static const String hardwareProducts = '/admin/hardware/products';
+  static const String hardwareCreateProduct = '/admin/hardware/product';
+  static String hardwareUpdateProduct(String id) => '/admin/hardware/product/$id';
+  static String hardwareProductImages(String id) => '/admin/hardware/product/$id/images';
+  static String hardwareDeleteProduct(String id) => '/admin/hardware/product/$id';
+  static const String hardwareOrders = '/admin/hardware/orders';
+  static String hardwareUpdateOrder(String id) => '/admin/hardware/order/$id';
+  static const String hardwareBatches = '/admin/hardware/batches';
+  static const String hardwareCreateBatch = '/admin/hardware/batch';
+  static String hardwareUpdateBatch(String id) => '/admin/hardware/batch/$id';
+  static String hardwareBatchOrders(String id) => '/admin/hardware/batch/$id/orders';
+
+  // ── Admin: Reconciliation / Treasury ──────────────────────────────────────
+  static const String adminReconciliationSummary  = '/admin/reconciliation/summary';
+  static const String adminReconciliationSnapshot = '/admin/reconciliation/snapshot';
+  static const String adminReconciliationHistory  = '/admin/reconciliation/history';
+  static const String adminRevenueSummary         = '/admin/revenue/summary';
+  static const String adminRevenueLedger          = '/admin/revenue/ledger';
+
+  // ── Broadcast ─────────────────────────────────────────────────────────────
+  /// POST /chat/official/broadcast — admin-only FCM topic push + Firestore doc.
+  static const String broadcastSend = '/chat/official/broadcast';
+
+  // ── Partner acquisition system ────────────────────────────────────────────
+  static const String adminPartners = '/admin/partners';
+  static String adminPartnerDetail(String id) => '/admin/partners/$id';
+  static String adminPartnerUpdate(String id) => '/admin/partners/$id';
+  static String adminPartnerLinkUser(String id) => '/admin/partners/$id/link-user';
+  static String adminPartnerVendors(String id) => '/admin/partners/$id/vendors';
+  static String adminPartnerVendorLink(String id, String linkId) =>
+      '/admin/partners/$id/vendors/$linkId';
+  static String adminPartnerCommission(String id) =>
+      '/admin/partners/$id/commission';
+  static String adminPartnerPayouts(String id) =>
+      '/admin/partners/$id/payouts';
+  static String adminPartnerPayoutDetail(String id, String payoutId) =>
+      '/admin/partners/$id/payouts/$payoutId';
 }
