@@ -273,6 +273,11 @@ class _VendorDetailScreenState extends State<VendorDetailScreen> {
                     copyable: true,
                   ),
                   InfoRow(
+                    label: 'Vendor Id',
+                    value: vendor.id,
+                    copyable: true,
+                  ),
+                  InfoRow(
                     label: 'Applied',
                     value: AppFormatters.dateTime(vendor.createdAt),
                   ),

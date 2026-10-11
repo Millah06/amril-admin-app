@@ -148,6 +148,11 @@ class _ConfigViewScreenState extends State<ConfigViewScreen> {
                   _boolRow('Automatic failover', c.payments.failoverEnabled),
                   _row('KYC provider', _providerName(c.payments.kycProvider)),
                   _boolRow('Paystack virtual accounts', c.payments.vaPaystack),
+                  _boolRow('OPay virtual accounts', c.payments.vaOpay),
+                  _row('Preferred virtual account',
+                      _providerName(c.payments.vaPreferred)),
+                  _boolRow('Retire other virtual accounts',
+                      c.payments.vaHideNonPreferred),
                 ]),
                 _group('Delivery (per-km)', Icons.delivery_dining_rounded, [
                   _row('Base fee range', _range(c.delivery.baseFeeMin, c.delivery.baseFeeMax, '₦')),

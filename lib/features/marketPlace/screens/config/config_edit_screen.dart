@@ -529,6 +529,7 @@ class _ConfigEditScreenState extends State<ConfigEditScreen> {
                         'paystack': 'Paystack',
                         'monnify': 'Monnify',
                         'opay': 'OPay',
+                        'opay_online': 'Opay Online'
                       },
                       (v) => setState(() =>
                           _payments = _payments.copyWith(onlinePrimary: v)),
@@ -570,7 +571,7 @@ class _ConfigEditScreenState extends State<ConfigEditScreen> {
                       'BVN/NIN name-match lookups. Monnify is live-only and '
                       'charged from the Monnify wallet.',
                       _payments.kycProvider,
-                      const {'monnify': 'Monnify', 'dojah': 'Dojah'},
+                      const {'monnify': 'Monnify', 'dojah': 'Dojah', 'prembly' : 'Prembly', 'noop': 'Noop'},
                       (v) => setState(() =>
                           _payments = _payments.copyWith(kycProvider: v)),
                     ),
@@ -580,6 +581,36 @@ class _ConfigEditScreenState extends State<ConfigEditScreen> {
                       _payments.vaPaystack,
                       (v) => setState(() =>
                           _payments = _payments.copyWith(vaPaystack: v)),
+                    ),
+                    _switch(
+                      'OPay virtual accounts',
+                      'OPay "Digital Wallet" deposit codes. Needs OPay VA live '
+                      'approval and the OPAY_VA_* server keys — leave OFF until '
+                      'both are in place.',
+                      _payments.vaOpay,
+                      (v) => setState(
+                          () => _payments = _payments.copyWith(vaOpay: v)),
+                    ),
+                    _dropdown(
+                      'Preferred virtual account',
+                      'Which provider serves NEW account requests and shows '
+                      'first in the app. Existing accounts keep working either '
+                      'way — no app release needed to switch.',
+                      _payments.vaPreferred,
+                      const {'paystack': 'Paystack', 'opay': 'OPay'},
+                      (v) => setState(
+                          () => _payments = _payments.copyWith(vaPreferred: v)),
+                    ),
+                    _switch(
+                      'Retire other virtual accounts',
+                      'Hides accounts from providers other than the preferred one, '
+                      'so users are prompted to generate a new one. Works even on '
+                      'app versions that were never updated. Hidden accounts still '
+                      'receive money and nothing is deleted — turn this off to '
+                      'restore them instantly.',
+                      _payments.vaHideNonPreferred,
+                      (v) => setState(() =>
+                          _payments = _payments.copyWith(vaHideNonPreferred: v)),
                     ),
                   ],
                 ),

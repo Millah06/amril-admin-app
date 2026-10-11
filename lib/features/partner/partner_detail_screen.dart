@@ -7,7 +7,9 @@ import '../../shared/widgets/error_view.dart';
 import '../../shared/widgets/loading_list.dart';
 import 'commission_screen.dart';
 import 'model.dart';
+import 'payment_detail_model.dart';
 import 'provider.dart';
+import 'service.dart';
 
 class PartnerDetailScreen extends StatefulWidget {
   const PartnerDetailScreen({super.key, required this.partnerId});
@@ -142,6 +144,12 @@ class _PartnerDetailScreenState extends State<PartnerDetailScreen> {
                     ),
                   ),
                 if (!d.hasUserAccount) const SizedBox(height: 16),
+
+                // ── Payment Details (read-only) ──────────────────────────
+                _SectionLabel(label: 'Payment Details'),
+                const SizedBox(height: 8),
+                _PaymentDetailsCard(partnerId: widget.partnerId),
+                const SizedBox(height: 16),
 
                 // ── Stats row ─────────────────────────────────────────────
                 Row(children: [
@@ -1075,5 +1083,175 @@ class _LinkUserSheetState extends State<_LinkUserSheet> {
     if (uid.isEmpty) return;
     final ok = await p.linkUser(widget.partnerId, uid);
     if (ok && context.mounted) Navigator.pop(context);
+  }
+}
+
+// ── Section Label ─────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label.toUpperCase(),
+      style: const TextStyle(
+        color: AppTheme.textSecondary,
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1.0,
+      ),
+    );
+  }
+}
+
+// ── Payment Details Card (admin read-only) ────────────────────────────────────
+
+class _PaymentDetailsCard extends StatefulWidget {
+  const _PaymentDetailsCard({required this.partnerId});
+  final String partnerId;
+
+  @override
+  State<_PaymentDetailsCard> createState() => _PaymentDetailsCardState();
+}
+
+class _PaymentDetailsCardState extends State<_PaymentDetailsCard> {
+  PartnerPaymentDetail? _detail;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final service = PartnerService();
+      final detail = await service.getPaymentDetails(widget.partnerId);
+      if (mounted) {
+        setState(() {
+          _detail = detail;
+          _loading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return Card(
+        color: AppTheme.surface,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: const Center(
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_detail == null) {
+      return Card(
+        color: AppTheme.surface,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline_rounded,
+                  color: AppTheme.textSecondary, size: 18),
+              SizedBox(width: 10),
+              Text(
+                'No payment details added yet',
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      color: AppTheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.success.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.account_balance_rounded,
+                      color: AppTheme.success, size: 18),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _detail!.bankName,
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _detail!.accountNumber,
+                        style: const TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontFamily: 'monospace',
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Divider(color: AppTheme.divider, height: 1),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Icon(Icons.person_outline_rounded,
+                    size: 16, color: AppTheme.textSecondary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _detail!.accountName,
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -3,7 +3,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'https://everywhere-data-app.onrender.com'; // 🔌 replace with your URL
+  static const String baseUrl = 'https://api.amril.app'; // 🔌 replace with your URL
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   static const String login = '/auth/login';
@@ -21,6 +21,7 @@ class ApiConstants {
 
   // ── Admin: Transactions ───────────────────────────────────────────────────
   static const String adminTransactions = '/admin/transactions';
+  static String adminTransactionDetail(String id) => '/admin/transactions/$id';
   static const String adminTransactionSearch = '/admin/transactions/search';
   static String adminRefund(String id) => '/admin/transactions/$id/refund';
   static const String adminManualCredit = '/admin/transactions/manual-credit';

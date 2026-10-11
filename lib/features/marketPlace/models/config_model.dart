@@ -20,6 +20,16 @@ class PaymentsConfigModel {
   // Virtual accounts
   final bool vaPaystack;
   final bool vaMonnify; // KYC-gated — owner decided to keep OFF
+  final bool vaOpay; // OPay "Digital Wallet" — OFF until OPay VA live approval
+
+  /// Which provider serves NEW virtual-account requests, and which existing
+  /// account the app displays first. Flipping this needs no app release.
+  final String vaPreferred; // paystack | monnify | opay
+
+  /// Retire the non-preferred provider: hide its accounts from the app so users
+  /// generate a preferred-provider one instead. Works on OLD app builds too.
+  /// Hidden accounts keep receiving money — nothing is deleted.
+  final bool vaHideNonPreferred;
 
   final String kycProvider; // monnify | dojah
 
@@ -33,6 +43,9 @@ class PaymentsConfigModel {
     this.failoverEnabled = false,
     this.vaPaystack = true,
     this.vaMonnify = false,
+    this.vaOpay = false,
+    this.vaPreferred = 'paystack',
+    this.vaHideNonPreferred = false,
     this.kycProvider = 'monnify',
   });
 
@@ -52,6 +65,9 @@ class PaymentsConfigModel {
       failoverEnabled: b(wd['failoverEnabled'], false),
       vaPaystack: b(va['paystack'], true),
       vaMonnify: b(va['monnify'], false),
+      vaOpay: b(va['opay'], false),
+      vaPreferred: (va['preferred'] ?? 'paystack').toString(),
+      vaHideNonPreferred: b(va['hideNonPreferred'], false),
       kycProvider: (json['kycProvider'] ?? 'monnify').toString(),
     );
   }
@@ -74,7 +90,13 @@ class PaymentsConfigModel {
       'primary': withdrawalPrimary,
       'failoverEnabled': failoverEnabled,
     },
-    'virtualAccount': {'paystack': vaPaystack, 'monnify': vaMonnify},
+    'virtualAccount': {
+      'paystack': vaPaystack,
+      'monnify': vaMonnify,
+      'opay': vaOpay,
+      'preferred': vaPreferred,
+      'hideNonPreferred': vaHideNonPreferred,
+    },
     'kycProvider': kycProvider,
   };
 
@@ -88,6 +110,9 @@ class PaymentsConfigModel {
     bool? failoverEnabled,
     bool? vaPaystack,
     bool? vaMonnify,
+    bool? vaOpay,
+    String? vaPreferred,
+    bool? vaHideNonPreferred,
     String? kycProvider,
   }) {
     return PaymentsConfigModel(
@@ -100,6 +125,9 @@ class PaymentsConfigModel {
       failoverEnabled: failoverEnabled ?? this.failoverEnabled,
       vaPaystack: vaPaystack ?? this.vaPaystack,
       vaMonnify: vaMonnify ?? this.vaMonnify,
+      vaOpay: vaOpay ?? this.vaOpay,
+      vaPreferred: vaPreferred ?? this.vaPreferred,
+      vaHideNonPreferred: vaHideNonPreferred ?? this.vaHideNonPreferred,
       kycProvider: kycProvider ?? this.kycProvider,
     );
   }

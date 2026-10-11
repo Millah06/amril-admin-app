@@ -10,18 +10,25 @@ class TransactionListTile extends StatelessWidget {
     super.key,
     required this.tx,
     this.onRefund,
+    this.onTap,
   });
 
   final AdminTransaction tx;
   final VoidCallback? onRefund;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final isCredit = tx.isCredit;
     final color = isCredit ? AppTheme.success : AppTheme.danger;
+    final hasDistinctMessage =
+        tx.message != null && tx.message!.trim().isNotEmpty && tx.message != tx.displayLabel;
 
     return Card(
-      child: Padding(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +55,7 @@ class TransactionListTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tx.message ?? (isCredit ? 'Credit' : 'Debit'),
+                        tx.displayLabel,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
@@ -56,6 +63,18 @@ class TransactionListTile extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      if (hasDistinctMessage) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          tx.message!,
+                          style: const TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 11,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                       if (tx.userName != null) ...[
                         const SizedBox(height: 2),
                         Text(
@@ -148,6 +167,7 @@ class TransactionListTile extends StatelessWidget {
               ],
             ),
           ],
+        ),
         ),
       ),
     );

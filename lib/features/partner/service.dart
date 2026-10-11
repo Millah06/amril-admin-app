@@ -1,6 +1,7 @@
 import '../../../core/constants/api_constants.dart';
 import '../../../core/network/dio_client.dart';
 import 'model.dart';
+import 'payment_detail_model.dart';
 
 class PartnerService {
   // ── Partners ───────────────────────────────────────────────────────────────
@@ -155,6 +156,23 @@ class PartnerService {
         ApiConstants.adminPartnerPayouts(partnerId));
     return ((data as List?) ?? [])
         .map((e) => PartnerPayout.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  // ── Payment Details (admin read-only) ──────────────────────────────────────
+
+  Future<PartnerPaymentDetail?> getPaymentDetails(String partnerId) async {
+    final data = await DioClient.get(
+        '${ApiConstants.adminPartnerDetail(partnerId)}/payment-details');
+    if (data == null) return null;
+    return PartnerPaymentDetail.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<List<PaymentDetailHistory>> getPaymentHistory(String partnerId) async {
+    final data = await DioClient.get(
+        '${ApiConstants.adminPartnerDetail(partnerId)}/payment-details/history');
+    return ((data as List?) ?? [])
+        .map((e) => PaymentDetailHistory.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 }

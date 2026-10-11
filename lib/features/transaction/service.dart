@@ -36,6 +36,14 @@ class TransactionsService {
     return AdminTransaction.fromJson(data as Map<String, dynamic>);
   }
 
+  /// Fetch full detail for a single transaction, including user, delivery,
+  /// payment and refund info.
+  Future<AdminTransactionDetail> getTransactionDetail(String id) async {
+    final data = await DioClient.get(ApiConstants.adminTransactionDetail(id));
+    final body = data as Map<String, dynamic>;
+    return AdminTransactionDetail.fromJson(body['data'] as Map<String, dynamic>);
+  }
+
   Future<String> refund(String transactionId, {String? reason}) async {
     final data = await DioClient.post(
       ApiConstants.adminRefund(transactionId),

@@ -4,13 +4,13 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
-import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/empty_view.dart';
 import '../../../shared/widgets/error_view.dart';
 import '../../../shared/widgets/loading_list.dart';
 
 import 'list_tile.dart';
 import 'model.dart';
+import 'detail_screen.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -73,6 +73,15 @@ class _TransactionsScreenState extends State<TransactionsScreen>
   void _clearSearch() {
     _searchCtrl.clear();
     context.read<TransactionsProvider>().clearSearch();
+  }
+
+  void _openDetail(AdminTransaction tx) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TransactionDetailScreen(transactionId: tx.id),
+      ),
+    );
   }
 
   Future<void> _onRefund(AdminTransaction tx) async {
@@ -285,6 +294,7 @@ class _TransactionsScreenState extends State<TransactionsScreen>
                           onRefund: provider.searchResult!.canBeRefunded
                               ? () => _onRefund(provider.searchResult!)
                               : null,
+                          onTap: () => _openDetail(provider.searchResult!),
                         ),
                       ),
                     ],
@@ -336,6 +346,7 @@ class _TransactionsScreenState extends State<TransactionsScreen>
                         child: TransactionListTile(
                           tx: tx,
                           onRefund: tx.canBeRefunded ? () => _onRefund(tx) : null,
+                          onTap: () => _openDetail(tx),
                         ),
                       );
                     },

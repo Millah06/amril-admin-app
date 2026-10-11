@@ -2,6 +2,7 @@ import 'package:admin_panel/features/dashboard/provider.dart';
 import 'package:admin_panel/features/dashboard/stat_card.dart';
 import 'package:admin_panel/features/marketPlace/shell.dart';
 import 'package:admin_panel/features/partner/partner_list_screen.dart';
+import 'package:admin_panel/features/rider/shell.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -138,6 +139,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const PartnerListScreen()),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // ── Riders ──────────────────────────────────────────────
+                _SectionHeader(title: 'Riders', icon: Icons.two_wheeler_outlined),
+                const SizedBox(height: 12),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.two_wheeler_rounded, color: AppTheme.primary),
+                    title: const Text(
+                      'Manage Riders',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                    subtitle: const Text('Applications, active riders & suspensions'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const RiderShell()),
                       );
                     },
                   ),

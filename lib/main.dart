@@ -18,6 +18,7 @@ import 'features/users/provider.dart';
 import 'features/users/service.dart';
 import 'features/partner/provider.dart';
 import 'features/partner/service.dart';
+import 'features/rider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,6 +83,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => TransactionsProvider(TransactionsService())),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider(AnalyticsService())),
         ChangeNotifierProvider(create: (_) => PartnerProvider(PartnerService())),
+        ChangeNotifierProvider(create: (_) => RiderProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
