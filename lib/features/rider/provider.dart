@@ -46,7 +46,7 @@ class RiderProvider extends ChangeNotifier {
       error = null;
     } catch (e) {
       error = e.toString();
-      if (kDebugMode) print('❌ Load riders error: $e');
+      print('❌ Load riders error: $e');
     } finally {
       loading = false;
       notifyListeners();

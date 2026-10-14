@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'applications_screen.dart';
 import 'riders_screen.dart';
+import 'bonus_config_screen.dart';
 
 class RiderShell extends StatefulWidget {
   const RiderShell({super.key});
@@ -16,7 +17,7 @@ class _RiderShellState extends State<RiderShell> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -38,6 +39,7 @@ class _RiderShellState extends State<RiderShell> with SingleTickerProviderStateM
           tabs: const [
             Tab(text: 'Applications'),
             Tab(text: 'Active Riders'),
+            Tab(text: 'Bonus Config'),
           ],
         ),
       ),
@@ -46,6 +48,7 @@ class _RiderShellState extends State<RiderShell> with SingleTickerProviderStateM
         children: const [
           RiderApplicationsScreen(),
           RidersScreen(),
+          BonusConfigScreen(),
         ],
       ),
     );
